@@ -19,6 +19,7 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.ServoController;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -37,7 +38,7 @@ public class TEST extends LinearOpMode {
     TrajectorySequence s;
     Trajectory stack_1, stack_2;
     Trajectory back_junction;
-
+    ServoController controller;
     //    Motor brat_pe_sub;
 //    Motor brat;
     Motor brat_pe_sub, brat;
@@ -97,16 +98,16 @@ public class TEST extends LinearOpMode {
         Thread coboara_si_rot_stack_1 = new Thread(() -> {
             sleep(400);
 
-            while(opModeIsActive() && !getMagnetAtingere()){
-                rotesteThing(-0.8);
-            }
-            rotesteThing(0);
+//            while (opModeIsActive() && !getMagnetAtingere()) {
+//                rotesteThing(-0.8);
+//            }
+//            rotesteThing(0);
+//
+//            start_brat(-0.7);
+//            sleep(800);
+//            stop_brat();
 
-            start_brat(-0.7);
-            sleep(800);
-            stop_brat();
-
-//            ridica(450, 0.2, LiftMode.DOWN);
+            ridica(450, 0.2, LiftMode.DOWN);
         });
 
         Thread coboara_si_rot_stack_2 = new Thread(() -> {
@@ -127,15 +128,15 @@ public class TEST extends LinearOpMode {
         });
 
         Thread ridica_si_rot = new Thread(() -> {
-//            brat.setRunMode(Motor.RunMode.RawPower);
-//            brat_pe_sub.setRunMode(Motor.RunMode.RawPower);
+            brat.setRunMode(Motor.RunMode.RawPower);
+            brat_pe_sub.setRunMode(Motor.RunMode.RawPower);
 
-            ridica(1200, 0.6, LiftMode.UP);
+//            ridica(1200, 0.6, LiftMode.UP);
 
             inchide();
             sleep(100);
-//            start_brat(1);
-//            sleep(500);
+            start_brat(1);
+            sleep(500);
             rotesteThing(1);
         });
 
@@ -189,6 +190,15 @@ public class TEST extends LinearOpMode {
                 .addDisplacementMarker(this::inchide)
                 .build();
 
+
+        Trajectory first = robot.trajectoryBuilder(START_DR_RED_BLUE)
+                .addTemporalMarker(0, () -> {
+                    ridica_si_rot.start();
+                })
+                .lineToSplineHeading(new Pose2d(40, -6))
+                .build();
+
+
         waitForStart();
 
         this.inchide();
@@ -199,18 +209,19 @@ public class TEST extends LinearOpMode {
             this.inchide();
             sleep(200);
 
-            robot.followTrajectory(f);
-            robot.update();
+//            robot.followTrajectory(f);
+//            robot.update();
+//
+//            robot.followTrajectory(stack_1);
+////            robot.update();/
+//
+//
+//            robot.followTrajectory(back_junction);
+//            robot.update();
+//            robot.followTrajectory(stack_2);
+//
+//            robot.followTrajectory(back_junction);
 
-            robot.followTrajectory(stack_1);
-//            robot.update();/
-
-
-            robot.followTrajectory(back_junction);
-            robot.update();
-            robot.followTrajectory(stack_2);
-
-            robot.followTrajectory(back_junction);
 
             sleep(30000);
             stop();
