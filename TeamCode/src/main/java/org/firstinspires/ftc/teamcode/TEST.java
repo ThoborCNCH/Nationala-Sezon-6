@@ -38,7 +38,7 @@ public class TEST extends LinearOpMode {
     TrajectorySequence s;
     Trajectory stack_1, stack_2;
     Trajectory back_junction;
-    ServoController controller;
+
     //    Motor brat_pe_sub;
 //    Motor brat;
     Motor brat_pe_sub, brat;
@@ -158,7 +158,14 @@ public class TEST extends LinearOpMode {
                 .waitSeconds(0.2)
                 .build();
 
-        stack_1 = robot.trajectoryBuilder(s.end())
+        Trajectory first = robot.trajectoryBuilder(START_DR_RED_BLUE)
+                .addTemporalMarker(0, () -> {
+                    ridica_si_rot.start();
+                })
+                .lineToSplineHeading(new Pose2d(40, -6, Math.toRadians(0)))
+                .build();
+
+        stack_1 = robot.trajectoryBuilder(first.end())
                 .addTemporalMarker(0, () -> {
                     coboara_si_rot_stack_1.start();
                 })
@@ -191,12 +198,6 @@ public class TEST extends LinearOpMode {
                 .build();
 
 
-        Trajectory first = robot.trajectoryBuilder(START_DR_RED_BLUE)
-                .addTemporalMarker(0, () -> {
-                    ridica_si_rot.start();
-                })
-                .lineToSplineHeading(new Pose2d(40, -6))
-                .build();
 
 
         waitForStart();
@@ -208,6 +209,9 @@ public class TEST extends LinearOpMode {
             telemetry.update();
             this.inchide();
             sleep(200);
+
+            robot.followTrajectory(first);
+            robot.followTrajectory(stack_1);
 
 //            robot.followTrajectory(f);
 //            robot.update();
