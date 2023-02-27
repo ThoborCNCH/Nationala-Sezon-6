@@ -79,8 +79,12 @@ public class TeleOP extends CommandOpMode {
     private InstantCommand liftOpresteCommand;
 
     private InstantCommand driveForwardDpadCommand;
-    private InstantCommand driveStrafeDpadCommand;
-    private InstantCommand driveRotateDpadCommand;
+    private InstantCommand driveBackDpadCommand;
+    private InstantCommand driveStrafeLeftDpadCommand;
+    private InstantCommand driveStrafeRightDpadCommand;
+    private InstantCommand driveRotateLeftCommand;
+    private InstantCommand driveRotateRightCommand;
+    private InstantCommand driveStopDpadCommand;
 
     private Thread rotesteCentruSTThread;
     private Thread rotesteCentruDRThread;
@@ -95,6 +99,11 @@ public class TeleOP extends CommandOpMode {
     Button rotesteAutoStanga, rotesteAutoDreapta;
     Button rotesteStanga, rotesteDreapta, rotesteStopST, rotesteStopDR;
     Trigger rotesteSTBratTrigger, rotesteDRBratTrigger, rotesteStopBratSTTrigger, rotesteStopBratDRTrigger;
+
+    Button driveFrontal, driveBack, driveFrontalStop, driveBackStop;
+    Button driveLeft, driveRight, driveLeftStop, driveRightStop;
+
+    Trigger driveRotLeft, driveRotRight, driveRotLeftStop, driveRotRightStop;
 
     double power_ridica = 0.6;
     double power_coboara = -0.6;
@@ -177,11 +186,11 @@ public class TeleOP extends CommandOpMode {
         }, thingSubsystem);
 
         bratDreaptaAUTOCommand = new InstantCommand(() -> {
-            bratSubsystem.rotesteCentru(1);
+            bratSubsystem.rotesteCentruTimer(-1);
         }, bratSubsystem);
 
         bratStangaAUTOCommand = new InstantCommand(() -> {
-            bratSubsystem.rotesteCentru(-1);
+            bratSubsystem.rotesteCentruTimer(1);
         }, bratSubsystem);
 
         liftRidicaCommand = new InstantCommand(() -> {
@@ -217,20 +226,44 @@ public class TeleOP extends CommandOpMode {
         }, bratSubsystem);
 
         bratRotesteLeftTriggerCommand = new InstantCommand(() -> {
-            bratSubsystem.rotesteThing(gamepad2.left_trigger);
+            bratSubsystem.rotesteThing(-driver2.getTrigger((GamepadKeys.Trigger.LEFT_TRIGGER)));
         }, bratSubsystem);
 
         bratRotesteRightTriggerCommand = new InstantCommand(() -> {
-            bratSubsystem.rotesteThing(gamepad2.right_trigger);
+            bratSubsystem.rotesteThing(driver2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER));
         }, bratSubsystem);
 
         bratOpresteRotireTriggerCommand = new InstantCommand(() -> {
             bratSubsystem.rotesteThing(0);
-        });
+        }, bratSubsystem);
 
         driveForwardDpadCommand = new InstantCommand(()->{
-           driveSubsystem
-        });
+           driveSubsystem.dpad_frontal(0.6, driver1.getButton(GamepadKeys.Button.LEFT_BUMPER), driver1.getButton(GamepadKeys.Button.RIGHT_BUMPER));
+        }, driveSubsystem);
+
+        driveBackDpadCommand = new InstantCommand(()->{
+            driveSubsystem.dpad_frontal(-0.6, driver1.getButton(GamepadKeys.Button.LEFT_BUMPER), driver1.getButton(GamepadKeys.Button.RIGHT_BUMPER));
+        }, driveSubsystem);
+
+        driveStrafeLeftDpadCommand = new InstantCommand(()->{
+            driveSubsystem.dpad_lateral(-0.6, driver1.getButton(GamepadKeys.Button.LEFT_BUMPER), driver1.getButton(GamepadKeys.Button.RIGHT_BUMPER));
+        }, driveSubsystem);
+
+        driveStrafeRightDpadCommand = new InstantCommand(()->{
+           driveSubsystem.dpad_lateral(0.6, driver1.getButton(GamepadKeys.Button.LEFT_BUMPER), driver1.getButton(GamepadKeys.Button.RIGHT_BUMPER));
+        }, driveSubsystem);
+
+        driveRotateLeftCommand = new InstantCommand(()->{
+            driveSubsystem.rotire(-0.2, driver1.getButton(GamepadKeys.Button.LEFT_BUMPER), driver1.getButton(GamepadKeys.Button.RIGHT_BUMPER));
+        }, driveSubsystem);
+
+        driveRotateRightCommand = new InstantCommand(()->{
+           driveSubsystem.rotire(0.2, driver1.getButton(GamepadKeys.Button.LEFT_BUMPER), driver1.getButton(GamepadKeys.Button.RIGHT_BUMPER));
+        }, driveSubsystem);
+
+        driveStopDpadCommand = new InstantCommand(()->{
+            driveSubsystem.drive(0, 0, 0);
+        }, driveSubsystem);
 
 
         //bumpere lift
@@ -255,16 +288,33 @@ public class TeleOP extends CommandOpMode {
         rotesteStopST = new GamepadButton(driver2, GamepadKeys.Button.DPAD_LEFT).whenReleased(bratOpresteRotireCommand);
         rotesteStopDR = new GamepadButton(driver2, GamepadKeys.Button.DPAD_RIGHT).whenReleased(bratOpresteRotireCommand);
 
-        //NU SUNT TRIGGERS PENTRU BRAT
-        rotesteAutoDreapta = new GamepadButton(driver2, GamepadKeys.Button.Y).whenPressed(rotesteCentruSTThread::start);
-        rotesteAutoStanga = new GamepadButton(driver2, GamepadKeys.Button.X).whenPressed(rotesteCentruDRThread::start);
+//        rotesteAutoDreapta = new GamepadButton(driver2, GamepadKeys.Button.Y).whenPressed(rotesteCentruSTThread::start);
+//        rotesteAutoStanga = new GamepadButton(driver2, GamepadKeys.Button.X).whenPressed(rotesteCentruDRThread::start);
 
-        rotesteSTBratTrigger = new Trigger(()->(driver2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) != 0)).whileActiveContinuous(bratRotesteLeftTriggerCommand);
+//        #################################
+//        rotesteAutoStanga = new GamepadButton(driver2, GamepadKeys.Button.X).whenPressed(bratStangaAUTOCommand);
+//        rotesteAutoDreapta = new GamepadButton(driver2, GamepadKeys.Button.Y).whenPressed(bratDreaptaAUTOCommand);
+
+        rotesteSTBratTrigger = new Trigger(()->(driver2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) != 0)).whileActiveContinuous(bratRotesteSTCommand);
         rotesteStopBratSTTrigger = new Trigger(()->(driver2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER)) == 0).whenActive(bratOpresteRotireCommand);
-        rotesteDRBratTrigger = new Trigger(()->(driver2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER)) != 0).whileActiveContinuous(bratRotesteRightTriggerCommand);
-        rotesteStopBratDRTrigger = new Trigger(()->(driver2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER)) != 0).whenActive(bratOpresteRotireCommand);
+        rotesteDRBratTrigger = new Trigger(()->(driver2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER)) != 0).whileActiveContinuous(bratRotesteDRCommand);
+        rotesteStopBratDRTrigger = new Trigger(()->(driver2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER)) == 0).whenActive(bratOpresteRotireCommand);
 
+        //CONTROL DPAD SASIU
+        driveFrontal = new GamepadButton(driver1, GamepadKeys.Button.DPAD_UP).whileHeld(driveForwardDpadCommand);
+        driveFrontalStop = new GamepadButton(driver1, GamepadKeys.Button.DPAD_UP).whenReleased(driveStopDpadCommand);
+        driveBack = new GamepadButton(driver1, GamepadKeys.Button.DPAD_DOWN).whileHeld(driveBackDpadCommand);
+        driveBackStop = new GamepadButton(driver1, GamepadKeys.Button.DPAD_DOWN).whenReleased(driveStopDpadCommand);
+        driveLeft = new GamepadButton(driver1, GamepadKeys.Button.DPAD_LEFT).whileHeld(driveStrafeLeftDpadCommand);
+        driveLeftStop = new GamepadButton(driver1, GamepadKeys.Button.DPAD_LEFT).whenReleased(driveStopDpadCommand);
+        driveRight = new GamepadButton(driver1, GamepadKeys.Button.DPAD_RIGHT).whileHeld(driveStrafeRightDpadCommand);
+        driveRightStop = new GamepadButton(driver1, GamepadKeys.Button.DPAD_RIGHT).whenReleased(driveStopDpadCommand);
 
+        //ROTIRE TRIGGERS SASIU
+        driveRotLeft = new Trigger(()->(driver1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) != 0)).whileActiveContinuous(driveRotateLeftCommand);
+        driveRotLeftStop = new Trigger(()->(driver1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) == 0)).whenActive(driveStopDpadCommand);
+        driveRotLeft = new Trigger(()->(driver1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) != 0)).whileActiveContinuous(driveRotateRightCommand);
+        driveRotLeftStop = new Trigger(()->(driver1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) == 0)).whenActive(driveStopDpadCommand);
 
         register(driveSubsystem, liftSubsystem, bratSubsystem, thingSubsystem);
         driveSubsystem.setDefaultCommand(driveCommand);

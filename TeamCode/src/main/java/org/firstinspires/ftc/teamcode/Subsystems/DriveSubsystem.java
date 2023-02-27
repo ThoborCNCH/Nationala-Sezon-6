@@ -31,15 +31,39 @@ public class DriveSubsystem extends SubsystemBase {
         m_drive.driveRobotCentric(-str, -fwd, -rot);
     }
 
-    public void dpad_frontal(double fwd){
+    public void dpad_frontal(double fwd, boolean lb, boolean rb){
+        if(lb)
+            fwd = fwd * 0.3;
+        else if(rb)
+            fwd = fwd * 1.2;
+
+        if(fwd > 1)
+            fwd = 1;
+
         m_drive.driveRobotCentric(0, -fwd, 0);
     }
 
-    public void dpad_lateral(double str){
+    public void dpad_lateral(double str, boolean lb, boolean rb){
+        if(lb)
+            str = str * 0.3;
+        else if(rb)
+            str = str * 1.2;
+
+        if(str > 1)
+            str = 1;
+
         m_drive.driveRobotCentric(-str, 0, 0);
     }
 
-    public void rotire(double rot){
+    public void rotire(double rot, boolean lb, boolean rb){
+        if(lb)
+            rot = rot * 0.3;
+        else if(rb)
+            rot = rot * 1.2;
+
+        if(rot > 1)
+            rot = 1;
+
         m_drive.driveRobotCentric(0, 0, -rot);
     }
 }

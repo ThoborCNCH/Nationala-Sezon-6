@@ -1,25 +1,31 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 
+@Config
 @Autonomous
 public class Idk extends LinearOpMode {
     CRServo servo;
-
+    public static double poz1 = 1;
+    public static double poz2 = 0;
 
     @Override
     public void runOpMode() throws InterruptedException {
         servo = hardwareMap.get(com.qualcomm.robotcore.hardware.CRServo.class, "sus");
+        servo.getController().pwmEnable();
 
         waitForStart();
-        while(opModeIsActive()){
+        while (opModeIsActive()) {
 
-            servo.getController().pwmEnable();
-            servo.getController().setServoPosition(0, 1);
-            sleep(500);
-            servo.getController().setServoPosition(0, 0);
+            servo.getController().setServoPosition(0, poz1);
+
+            telemetry.addData("poza: ", servo.getController().getServoPosition(0));
+            telemetry.update();
+//            sleep(1000);
+//            servo.getController().setServoPosition(0, poz2);
 
             stop();
         }

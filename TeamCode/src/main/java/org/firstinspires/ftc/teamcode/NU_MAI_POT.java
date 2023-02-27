@@ -71,7 +71,7 @@ public class NU_MAI_POT {
     public static Pose2d JUNCTION_PUNE_INAINTE_DR_RED_BLUE = new Pose2d(38.3, -4.5, Math.toRadians(90));
     public static Pose2d JUNCTION_PUNE_DR_RED_BLUE = new Pose2d(38.3, -1.5, Math.toRadians(130));
     public static Vector2d JUNCTION_PUNE_DR_RED_BLUE_VECTOR = new Vector2d(32, -3.5);
-    public static Pose2d STACK_DR_RED_BLUE = new Pose2d(67, -9.2, Math.toRadians(0)); //ERA 60 BY SENZOR LA X
+    public static Pose2d STACK_DR_RED_BLUE = new Pose2d(67, -9, Math.toRadians(10)); //ERA 60 BY SENZOR LA X
     public static Pose2d STACK_DR_RED_BLUE2 = new Pose2d(67.2, -9.6, Math.toRadians(0));
     public static Pose2d JUNCTION_THING_DR_RED_BLUE = new Pose2d(36.99, -5.88, Math.toRadians(0));
     public static Pose2d JUNCTION_THING_DR_RED_BLUE2 = new Pose2d(36.8, -5.87, Math.toRadians(0));
