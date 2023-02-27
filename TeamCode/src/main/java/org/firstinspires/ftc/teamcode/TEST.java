@@ -12,6 +12,7 @@ import static org.firstinspires.ftc.teamcode.NU_MAI_POT.poz_inchis_st;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
+import com.arcrobotics.ftclib.controller.PIDController;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.arcrobotics.ftclib.util.Timing;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -42,15 +43,21 @@ public class TEST extends LinearOpMode {
     TrajectorySequence stack_2;
     TrajectorySequence back_junction;
     TrajectorySequence back_junction_after_math;
+    private PIDController controller;
+    public static double p = 0.03, i = 0, d = 0.0001;
 
-    //    Motor brat_pe_sub;
-//    Motor brat;
     Motor brat_pe_sub, brat;
     private Servo left, right;
     public VoltageSensor batteryVoltageSensor;
 
     CRServo servo;
     public TouchSensor magnet;
+
+    Thread ridica_si_rot;
+
+    Thread coboara_si_rot_stack_1;
+    Thread coboara_si_rot_stack_2;
+    Thread ridica;
 
 
     @Override
@@ -59,12 +66,13 @@ public class TEST extends LinearOpMode {
 
         robot = new SampleMecanumDrive(hardwareMap);
 
+        controller = new PIDController(p, i, d);
+
         brat_pe_sub = new Motor(hardwareMap, "brat_pe_sub");
         brat = new Motor(hardwareMap, "brat");
 //        brat_pe_sub = hardwareMap.get(DcMotor.class, "brat_pe_sub");
 //        brat = hardwareMap.get(DcMotor.class, "brat");
 
-        brat.setInverted(true);
         brat_pe_sub.setInverted(true);
 //        brat.setDirection(DcMotor.Direction.REVERSE);
 //        brat_pe_sub.setDirection(DcMotor.Direction.REVERSE);
@@ -82,6 +90,9 @@ public class TEST extends LinearOpMode {
         brat_pe_sub.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
 
         brat_pe_sub.resetEncoder();
+//        brat_pe_sub.setRunMode(Motor.RunMode.PositionControl);
+
+        brat_pe_sub.setPositionTolerance(10);
 
 
 //        brat_pe_sub.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -100,20 +111,17 @@ public class TEST extends LinearOpMode {
             right.setPosition(poz_deschis_dr);
         });
 
-        Thread coboara_si_rot_stack_1 = new Thread(() -> {
+        coboara_si_rot_stack_1 = new Thread(() -> {
             this.deschide();
             sleep(200);
             back_thing();
-            ridica_lift(350, 0.4);
+            lift(350, coboara_si_rot_stack_1);
         });
 
-        Thread coboara_si_rot_stack_2 = new Thread(() -> {
-            sleep(400);
-
-            // nigger
-
+        coboara_si_rot_stack_2 = new Thread(() -> {
+            sleep(200);
             back_thing();
-            ridica_lift(250, 0.4);
+            lift(250, coboara_si_rot_stack_2);
         });
 
         Thread coboara_si_rot_stack_3 = new Thread(() -> {
@@ -128,86 +136,47 @@ public class TEST extends LinearOpMode {
             ridica(100, 0.1, LiftMode.DOWN);
         });
 
-        Thread ridica_si_rot = new Thread(() -> {
-            brat.setRunMode(Motor.RunMode.RawPower);
-            brat_pe_sub.setRunMode(Motor.RunMode.RawPower);
-
-//            ridica(1200, 0.6, LiftMode.UP);
-
+        ridica_si_rot = new Thread(() -> {
             inchide();
-            sleep(400);
-            start_brat(1);
-            sleep(500);
-            rotesteThing(1);
-        });
-        Thread ridica_si_rot_v2 = new Thread(() -> {
-            brat.setRunMode(Motor.RunMode.RawPower);
-            brat_pe_sub.setRunMode(Motor.RunMode.RawPower);
-
-//            ridica(1200, 0.6, LiftMode.UP);
-
-            inchide();
-            start_brat(1);
+            sleep(200);
+            lift(2100, ridica_si_rot);
             sleep(500);
             rotesteThing(1);
         });
 
-        Thread ridica = new Thread(() -> {
-            brat.setRunMode(Motor.RunMode.RawPower);
-            brat_pe_sub.setRunMode(Motor.RunMode.RawPower);
-
-            inchide();
-            sleep(400);
-            start_brat(0.9);
+        ridica = new Thread(() -> {
+            lift(2100, ridica);
         });
 
 
         robot.setPoseEstimate(START_DR_RED_BLUE);
 
-        f = robot.trajectoryBuilder(robot.getPoseEstimate())
-                .addTemporalMarker(0, () -> {
-                    this.inchide();
-                    ridica_si_rot.start();
-                })
-                .lineToLinearHeading(new Pose2d(43.5, -40, Math.toRadians(0)))
-                .addDisplacementMarker(() -> robot.followTrajectorySequence(s))
-                .build();
-
-        s = robot.trajectorySequenceBuilder(f.end())
-                .lineToSplineHeading(new Pose2d(39.2, -6, Math.toRadians(-10)))
-                .addDisplacementMarker(this::deschide)
-                .waitSeconds(0.2)
-                .build();
 
         first = robot.trajectorySequenceBuilder(START_DR_RED_BLUE)
                 .addTemporalMarker(0, () -> {
                     this.inchide();
                     ridica.start();
-//                    ridica_si_rot.start();
                 })
-//                .setTurnConstraint(15, 15)
-//                .setTangent(Math.toRadians(75))
-//                .lineToSplineHeading(new Pose2d(40, -15, Math.toRadians(90)))
-//                .splineToLinearHeading(new Pose2d(38, -6, Math.toRadians(100)), Math.toRadians(0))
-//                .splineToSplineHeading(new Pose2d(38, -6, Math.toRadians(100)), Math.toRadians(100))
                 .lineTo(new Vector2d(40, -25))
                 .splineTo(new Vector2d(34.5, -3), Math.toRadians(120))
                 .addDisplacementMarker(this::deschide)
                 .waitSeconds(0.2)
                 .build();
 
+
         stack_1 = robot.trajectorySequenceBuilder(first.end())
                 .addDisplacementMarker(coboara_si_rot_stack_1::start)
                 .lineToLinearHeading(new Pose2d(40, -17, Math.toRadians(90)))
-                .splineTo(new Vector2d(66.5, -6), Math.toRadians(0))
+                .splineTo(new Vector2d(66, -5.7), Math.toRadians(0))
                 .addDisplacementMarker(this::inchide)
+                .waitSeconds(0.4)
                 .build();
 
         back_junction = robot.trajectorySequenceBuilder(stack_1.end())
                 .addDisplacementMarker(this::inchide)
-                .addDisplacementMarker(ridica_si_rot_v2::start)
+                .addDisplacementMarker(ridica_si_rot::start)
                 .waitSeconds(0.5)
-                .lineToLinearHeading(new Pose2d(36, -6, Math.toRadians(0)),
+                .lineToLinearHeading(new Pose2d(36, -4.8, Math.toRadians(0)),
                         SampleMecanumDrive.getVelocityConstraint(35, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(30))
                 .waitSeconds(0.5)
@@ -217,16 +186,20 @@ public class TEST extends LinearOpMode {
         stack_2 = robot.trajectorySequenceBuilder(back_junction.end())
                 .addDisplacementMarker(this::deschide)
                 .addTemporalMarker(0, coboara_si_rot_stack_2::start)
-                .lineToLinearHeading(new Pose2d(64, -6, Math.toRadians(0)))
-                .addDisplacementMarker(this::inchide)
+                .lineToLinearHeading(new Pose2d(63.3, -6, Math.toRadians(0)),
+                        SampleMecanumDrive.getVelocityConstraint(40, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getAccelerationConstraint(30))
                 .waitSeconds(0.2)
+                .addDisplacementMarker(this::inchide)
                 .build();
 
         back_junction_after_math = robot.trajectorySequenceBuilder(stack_2.end())
                 .addDisplacementMarker(this::inchide)
-                .addDisplacementMarker(ridica_si_rot_v2::start)
+                .addDisplacementMarker(ridica_si_rot::start)
                 .waitSeconds(0.5)
-                .lineToLinearHeading(new Pose2d(36, -6, Math.toRadians(0)))
+                .lineToLinearHeading(new Pose2d(36, -4.8, Math.toRadians(0)),
+                        SampleMecanumDrive.getVelocityConstraint(35, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getAccelerationConstraint(30))
                 .waitSeconds(0.1)
                 .addDisplacementMarker(this::deschide)
                 .build();
@@ -243,11 +216,16 @@ public class TEST extends LinearOpMode {
             sleep(400);
 
             robot.followTrajectorySequence(first);
+//            ridica.join(0);
+//            telemetry.addData("ridica thred: ", ridica.getState());
             robot.followTrajectorySequence(stack_1);
+//            coboara_si_rot_stack_1.join(0);
             robot.followTrajectorySequence(back_junction);
+//            ridica_si_rot.join(0);
             robot.followTrajectorySequence(stack_2);
+//            coboara_si_rot_stack_2.join(0);
             robot.followTrajectorySequence(back_junction_after_math);
-
+//            ridica_si_rot.join(0);
 //            robot.followTrajectory(f);
 //            robot.update();
 //
@@ -400,14 +378,31 @@ public class TEST extends LinearOpMode {
         rotesteThing(0);
     }
 
-    public void rotesteThing(double speed) {
+    private void rotesteThing(double speed) {
         servo.setPower(speed);
     }
 
-    public boolean getMagnetAtingere() {
+    private boolean getMagnetAtingere() {
         return magnet.isPressed();
     }
 
+    private void lift(double target, Thread thread) {
+        this.inchide();
+//        while (opModeIsActive() ) {
+            controller.setPID(p, i, d);
+            int armpos = brat_pe_sub.getCurrentPosition();
+            double pid = controller.calculate(armpos, target);
+            double power = pid;
+
+            brat_pe_sub.set(power);
+            brat.set(-power);
+//        }
+    }
+
+    private void lift(double target, Thread thread, boolean alternative){
+        this.inchide();
+        while (opModeIsActive() && brat.getCurrentPosition() <)
+    }
 }
 
 
