@@ -1,5 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
 public enum LiftMode {
-    UP, DOWN
+    UP, DOWN, NEUTRAL, ROSOPHIA
 }

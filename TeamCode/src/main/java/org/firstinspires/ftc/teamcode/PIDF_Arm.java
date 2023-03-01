@@ -72,9 +72,10 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 @TeleOp
 public class PIDF_Arm extends LinearOpMode {
     private PIDController controller;
-    public static double p = 0.03, i = 0, d = 0.0001;
-    public static double f = 0.5;
+    public static double p = 0.0018, i = 0, d = 0;
+    public static double f = 0.2;
 
+    public static int target = 2000;
 
     private final double ticks_in_degree = 537.7 / (3.543307 * Math.PI);
 
@@ -85,21 +86,7 @@ public class PIDF_Arm extends LinearOpMode {
         inits();
         waitForStart();
         while (opModeIsActive()) {
-            loops(500);
-
-            sleep(500);
-
-            loops(1000);
-
-            sleep(500);
-
-            loops(500);
-
-            sleep(500);
-
-            loops(1000);
-            sleep(500);
-
+            loops();
         }
     }
 
@@ -114,10 +101,11 @@ public class PIDF_Arm extends LinearOpMode {
         brat_pe_sub.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         brat_pe_sub.setDirection(DcMotorSimple.Direction.REVERSE);
+        brat_pe_sub.setTargetPositionTolerance(10);
 
     }
 
-    public void loops(double target) {
+    public void loops() {
         controller.setPID(p, i, d);
         int armpos = brat_pe_sub.getCurrentPosition();
         double pid = controller.calculate(armpos, target);
