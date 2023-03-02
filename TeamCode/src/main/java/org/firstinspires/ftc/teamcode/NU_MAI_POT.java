@@ -32,8 +32,6 @@ public class NU_MAI_POT {
 
     public static double power_de_putin = 0.8;
 
-    public static long sleep_for_strafe = 400;
-
     public static int cob1 = 365;
     public static int cob2 = 20;
     public static int cob3 = 406;
@@ -59,7 +57,7 @@ public class NU_MAI_POT {
     public static double limitare_vit = .7;
 
     public static Pose2d START_DR_RED_BLUE = new Pose2d(40.5, -58, Math.toRadians(90));
-    public static Pose2d START_ST_RED_BLUE = new Pose2d(-41.3, -57.8, Math.toRadians(90));
+    public static Pose2d START_ST_RED_BLUE = new Pose2d(-40.5, -58, Math.toRadians(90));
     public static Pose2d INTRE_TOT_DR_RED_BLUE = new Pose2d(43, -10, Math.toRadians(90));
     public static Vector2d INTRE_TOT_DR_RED_BLUE_VECTOR = new Vector2d(43, -10);
     public static Pose2d PRE_POSITION_DR_RED_BLUE2 = new Pose2d(43, -10, Math.toRadians(90));

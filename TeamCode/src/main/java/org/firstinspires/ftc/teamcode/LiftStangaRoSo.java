@@ -11,7 +11,7 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 @Config
-class ThreadInfo {
+class ThreadInfoStanga {
     public static int target = 0;
     public static boolean shouldClose = false;
     public static boolean use = true;
@@ -26,13 +26,13 @@ class ThreadInfo {
 //ROSOPHIA CA DE ALTA ERAM VAI NOI
 
 @Config
-class ArmcPIDF implements Runnable {
+class ArmcSTPIDF implements Runnable {
     DcMotorEx ridicareSlide, brat;
     CRServo servo;
     TouchSensor magnet;
     Servo left, right;
 
-    public ArmcPIDF(DcMotorEx ridicareSlide, DcMotorEx brat, CRServo servo, TouchSensor magnet, Servo left, Servo right) {
+    public ArmcSTPIDF(DcMotorEx ridicareSlide, DcMotorEx brat, CRServo servo, TouchSensor magnet, Servo left, Servo right) {
         this.ridicareSlide = ridicareSlide;
         this.brat = brat;
         this.servo = servo;
@@ -69,26 +69,26 @@ class ArmcPIDF implements Runnable {
         FtcDashboard dashboard = FtcDashboard.getInstance();
         ElapsedTime timer = new ElapsedTime();
         timer.reset();
-        while (!ThreadInfo.shouldClose) {
-            if (ThreadInfo.useTele) {
+        while (!ThreadInfoStanga.shouldClose) {
+            if (ThreadInfoStanga.useTele) {
                 ++tc;
                 if (timer2.seconds() >= 1.0) {
-                    ThreadInfo.fr = (int) (tc / timer2.seconds());
+                    ThreadInfoStanga.fr = (int) (tc / timer2.seconds());
                     tc = 0;
                     timer2.reset();
                 }
                 TelemetryPacket pack = new TelemetryPacket();
-                pack.put("fr", ThreadInfo.fr);
-                pack.put("Target", ThreadInfo.target);
+                pack.put("fr", ThreadInfoStanga.fr);
+                pack.put("Target", ThreadInfoStanga.target);
                 pack.put("Current", ridicareSlide.getCurrentPosition());
                 pack.put("Power", outp);
                 dashboard.sendTelemetryPacket(pack);
             }
-            if (ThreadInfo.use) {
-                if (ridicareSlide.getCurrentPosition() > 600 && ThreadInfo.servo_speed == 1) {
-                    servo.setPower(1);
-                } else if (ThreadInfo.servo_speed == -1 && !getMagnetAtingere()) {
+            if (ThreadInfoStanga.use) {
+                if (ridicareSlide.getCurrentPosition() > 600 && ThreadInfoStanga.servo_speed == -1) {
                     servo.setPower(-1);
+                } else if (ThreadInfoStanga.servo_speed == 1 && !getMagnetAtingere()) {
+                    servo.setPower(1);
                 } else {
                     servo.setPower(0);
                 }
@@ -102,7 +102,7 @@ class ArmcPIDF implements Runnable {
 //                    right.setPosition(NU_MAI_POT.poz_deschis_dr);
 //                }
 
-                error = ThreadInfo.target - ridicareSlide.getCurrentPosition();
+                error = ThreadInfoStanga.target - ridicareSlide.getCurrentPosition();
                 //derivate = (error - lastError) / timer.seconds();
                 integralSum = integralSum + (error * timer.seconds());
                 if (error < -220) {
@@ -110,7 +110,7 @@ class ArmcPIDF implements Runnable {
                 } else {
                     outp = /*(ppu * error * error) +*/ (pu * error) + (d * derivate) + (i * integralSum) + Kf;
                 }
-                if (ThreadInfo.target < 150 && ridicareSlide.getCurrentPosition() < 150) {
+                if (ThreadInfoStanga.target < 150 && ridicareSlide.getCurrentPosition() < 150) {
                     outp /= LPC;
                 }
                 ridicareSlide.setPower(outp);

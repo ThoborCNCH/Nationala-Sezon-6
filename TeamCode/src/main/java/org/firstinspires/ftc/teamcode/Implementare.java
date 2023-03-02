@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
 @Config
-@Autonomous
+@Autonomous(name = "Tunner LiftPID")
 public class Implementare extends LinearOpMode {
 
     public static int target = 0;

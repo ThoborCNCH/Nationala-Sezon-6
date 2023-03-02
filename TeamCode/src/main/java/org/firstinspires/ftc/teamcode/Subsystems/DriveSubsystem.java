@@ -1,8 +1,12 @@
 package org.firstinspires.ftc.teamcode.Subsystems;
 
+import static org.firstinspires.ftc.teamcode.NU_MAI_POT.*;
+
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.drivebase.MecanumDrive;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
+
+import org.firstinspires.ftc.teamcode.NU_MAI_POT;
 
 
 /*
@@ -28,7 +32,7 @@ public class DriveSubsystem extends SubsystemBase {
      */
 
     public void drive(double str, double fwd, double rot) {
-        m_drive.driveRobotCentric(-str, -fwd, -rot);
+        m_drive.driveRobotCentric(-str * limitare_vit, -fwd * limitare_vit, -rot * limitare_vit);
     }
 
     public void dpad_frontal(double fwd, boolean lb, boolean rb){

@@ -107,9 +107,8 @@ public class TeleOP extends CommandOpMode {
 
     double power_ridica = 0.6;
     double power_coboara = -0.6;
-    double power_ridica_slow = 0.3;
-    double power_coboara_slow = -0.2;
-
+    double power_ridica_slow = 0.5;
+    double power_coboara_slow = -0.45;
     double power_roteste = 0.6;
 
 
@@ -214,11 +213,11 @@ public class TeleOP extends CommandOpMode {
         });
 
         bratRotesteSTCommand = new InstantCommand(() -> {
-            bratSubsystem.rotesteThing(1);
+            bratSubsystem.rotesteThing(0.6);
         }, bratSubsystem);
 
         bratRotesteDRCommand = new InstantCommand(() -> {
-            bratSubsystem.rotesteThing(-1);
+            bratSubsystem.rotesteThing(-0.6);
         }, bratSubsystem);
 
         bratOpresteRotireCommand = new InstantCommand(() -> {
