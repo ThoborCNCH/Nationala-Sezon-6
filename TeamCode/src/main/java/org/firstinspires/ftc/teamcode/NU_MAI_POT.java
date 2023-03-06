@@ -54,7 +54,7 @@ public class NU_MAI_POT {
     public static double DISTANTA_GLISIERA = 74; //CM
     public static int GLISIERA_COUNTS = 0;
 
-    public static double limitare_vit = .7;
+    public static double limitare_vit = .9;
 
     public static Pose2d START_DR_RED_BLUE = new Pose2d(40.5, -58, Math.toRadians(90));
     public static Pose2d START_ST_RED_BLUE = new Pose2d(-40.5, -58, Math.toRadians(90));

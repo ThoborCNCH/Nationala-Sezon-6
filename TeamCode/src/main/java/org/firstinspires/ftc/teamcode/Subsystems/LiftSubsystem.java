@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode.Subsystems;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
 
+import org.firstinspires.ftc.teamcode.ThreadInfo;
+
 public class LiftSubsystem extends SubsystemBase {
 
     private Motor brat, brat_pe_sub;
@@ -126,10 +128,14 @@ public class LiftSubsystem extends SubsystemBase {
 
     public void liftPower(double power){
 
-        if(power == 0)
+        if(power == 0) {
             isMoving = false;
-        else
+            ThreadInfo.use = true;
+        } else {
             isMoving = true;
+            ThreadInfo.use = false;
+            ThreadInfo.target = brat_pe_sub.getCurrentPosition();
+        }
 
         brat.set(power);
         brat_pe_sub.set(power);

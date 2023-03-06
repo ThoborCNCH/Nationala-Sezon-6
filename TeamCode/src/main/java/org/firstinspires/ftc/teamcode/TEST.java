@@ -61,12 +61,14 @@ public class TEST extends LinearOpMode {
     TrajectorySequence s;
     TrajectorySequence stack_1;
     TrajectorySequence stack_2;
+    TrajectorySequence stack_4;
     Trajectory fs;
     TrajectorySequence stack_3;
     TrajectorySequence back_junction;
     TrajectorySequence back_junction_after_math;
     TrajectorySequence back_junction_3;
-    Thread coboara_si_rot_stack_3, coboara_si_rot_stack, coboara_stack;
+    TrajectorySequence back_junction_4;
+    Thread coboara_si_rot_stack_3, coboara_si_rot_stack_4, coboara_stack;
 
     AprilTagDetection tagOfInterest;
     double cx = 402.145;
@@ -164,52 +166,64 @@ public class TEST extends LinearOpMode {
         camera_thread = new Thread(camera::closeCameraDevice);
 
         ridica_si_rot = new Thread(() -> {
-            inchide();
-            sleep(200);
-            ThreadInfo.servo_speed = 1;
+//            inchide();
+            sleep(20);
             ThreadInfo.target = 2000;
+            ThreadInfo.servo_speed = 1;
         });
 
         coboara_stack = new Thread(() -> {
             this.deschide();
             ThreadInfo.servo_speed = 0;
             ThreadInfo.target = 290;
+            this.servo.setPower(0.1);
+            sleep(70);
+            this.servo.setPower(0);
         });
 
         coboara_si_rot_stack_2 = new Thread(() -> {
             this.deschide();
             ThreadInfo.servo_speed = 0;
-            back_thing();
-            ThreadInfo.target = 230;
+            sleep(120);
+            back_thing(-0.75);
+            ThreadInfo.target = 215;
 
         });
 
         coboara_si_rot_stack_3 = new Thread(() -> {
             this.deschide();
             ThreadInfo.servo_speed = 0;
+            sleep(120);
+            back_thing(-0.75);
+            sleep(50);
+            ThreadInfo.target = 105;
+        });
+
+        coboara_si_rot_stack_4 = new Thread(() -> {
+            this.deschide();
+            ThreadInfo.servo_speed = 0;
             sleep(150);
-            back_thing();
-            ThreadInfo.target = 130;
+            back_thing(-1);
+            ThreadInfo.target = 20;
         });
 
         robot.setPoseEstimate(START_DR_RED_BLUE);
 
         this.inchide();
-
         first = robot.trajectorySequenceBuilder(START_DR_RED_BLUE)
                 .addTemporalMarker(0, () -> {
                     this.inchide();
                     ThreadInfo.target = 2000;
                 })
                 .lineTo(new Vector2d(40, -25))
-                .splineTo(new Vector2d(33.7, -3.8), Math.toRadians(120))
+                .splineTo(new Vector2d(32.3, -4), Math.toRadians(120))
                 .build();
 
         stack_1 = robot.trajectorySequenceBuilder(first.end())
                 .addDisplacementMarker(this::deschide)
                 .addTemporalMarker(1, coboara_stack::start)
                 .lineToLinearHeading(new Pose2d(40, -17, Math.toRadians(90)))
-                .splineTo(new Vector2d(65.7, -5.85), Math.toRadians(0),
+                .splineTo(new Vector2d(65.7, -5.95), Math.toRadians(0),
                         SampleMecanumDrive.getVelocityConstraint(40, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(28))
                 .addDisplacementMarker(() -> {
@@ -221,11 +235,13 @@ public class TEST extends LinearOpMode {
         back_junction = robot.trajectorySequenceBuilder(stack_1.end())
                 .addDisplacementMarker(this::inchide)
                 .addDisplacementMarker(ridica_si_rot::start)
-//                .lineToLinearHeading(new Pose2d(36.2, -4.5, Math.toRadians(0)),
-                .setReversed(true)
-                .splineToLinearHeading(new Pose2d(36.2, -4.5, Math.toRadians(0)), Math.toRadians(140),
-                        SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-                        SampleMecanumDrive.getAccelerationConstraint(25))
+                .waitSeconds(0.15)
+
+//new
+                .lineToLinearHeading(new Pose2d(48, -7, Math.toRadians(0)))
+//                .splineToConstantHeading(new Vector2d(36.1, -4.5), Math.toRadians(-45))
+                .splineTo(new Vector2d(32, -5.7), Math.toRadians(160)) //cplm e cu headingul
+//end new
                 .waitSeconds(0.07)
                 .addDisplacementMarker(this::deschide)
                 .addDisplacementMarker(() -> {
@@ -235,8 +251,9 @@ public class TEST extends LinearOpMode {
 
         stack_2 = robot.trajectorySequenceBuilder(back_junction.end())
                 .addTemporalMarker(0, this::deschide)
-                .addTemporalMarker(0.12, coboara_si_rot_stack_2::start)
-                .lineToLinearHeading(new Pose2d(65.5, -6.65, Math.toRadians(0)),
+//                0.12
+                .addTemporalMarker(0, coboara_si_rot_stack_2::start)
+                .lineToLinearHeading(new Pose2d(65.5, -7.1, Math.toRadians(0)),
                         SampleMecanumDrive.getVelocityConstraint(40, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(28))
 //                .waitSeconds(0.1)
@@ -248,12 +265,13 @@ public class TEST extends LinearOpMode {
 
         back_junction_after_math = robot.trajectorySequenceBuilder(stack_2.end())
                 .addDisplacementMarker(this::inchide)
+
                 .addDisplacementMarker(ridica_si_rot::start)
-                .setReversed(true)
-//                .lineToLinearHeading(new Pose2d(36, -4.6, Math.toRadians(0)),
-              .splineToLinearHeading(new Pose2d(36, -4.6, Math.toRadians(0)), Math.toRadians(140),
-                        SampleMecanumDrive.getVelocityConstraint(40, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-                        SampleMecanumDrive.getAccelerationConstraint(20))
+                //.waitSeconds(0.7)
+                //
+                .lineToLinearHeading(new Pose2d(47, -7, Math.toRadians(0)))
+//                .splineToConstantHeading(new Vector2d(36.1, -4.5), Math.toRadians(-45))
+                .splineTo(new Vector2d(32.8, -5.07), Math.toRadians(160)) //cplm e cu headingul
                 .waitSeconds(0.07)
                 .addDisplacementMarker(() -> {
                     this.deschide();
@@ -263,27 +281,54 @@ public class TEST extends LinearOpMode {
         stack_3 = robot.trajectorySequenceBuilder(back_junction_after_math.end())
                 .addDisplacementMarker(this::deschide)
                 .addTemporalMarker(0, coboara_si_rot_stack_3::start)
-                .lineToLinearHeading(new Pose2d(65.5, -6.65, Math.toRadians(0)),
+                .lineToLinearHeading(new Pose2d(65.7, -7.3, Math.toRadians(0)),
                         SampleMecanumDrive.getVelocityConstraint(35, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(22))
                 .addDisplacementMarker(this::inchide)
                 .build();
 
         back_junction_3 = robot.trajectorySequenceBuilder(stack_3.end())
+                .addDisplacementMarker(this::inchide)
                 .addDisplacementMarker(ridica_si_rot::start)
-                .setReversed(true)
-//                .lineToLinearHeading(new Pose2d(36, -4.8, Math.toRadians(0)),
-        .splineToLinearHeading(new Pose2d(36, -4.8, Math.toRadians(0)), Math.toRadians(140),
-                        SampleMecanumDrive.getVelocityConstraint(40, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-                        SampleMecanumDrive.getAccelerationConstraint(20))
+                //.waitSeconds(0.7)
+                //
+                .lineToLinearHeading(new Pose2d(46, -7, Math.toRadians(0)))
+//                .splineToConstantHeading(new Vector2d(36.1, -4.5), Math.toRadians(-45))
+                .splineTo(new Vector2d(32.8, -5.07), Math.toRadians(160)) //cplm e cu headingul
                 .waitSeconds(0.07)
                 .addDisplacementMarker(this::deschide)
                 .build();
+
+// 6.65
+        stack_4 = robot.trajectorySequenceBuilder(back_junction_3.end())
+                .addDisplacementMarker(this::deschide)
+                .addTemporalMarker(0, coboara_si_rot_stack_4::start)
+                .lineToLinearHeading(new Pose2d(65.5, -7.7, Math.toRadians(0)),
+                        SampleMecanumDrive.getVelocityConstraint(35, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getAccelerationConstraint(22))
+                .addDisplacementMarker(this::inchide)
+                .build();
+
+        back_junction_4 = robot.trajectorySequenceBuilder(stack_4.end())
+                .addDisplacementMarker(this::inchide)
+                .addDisplacementMarker(ridica_si_rot::start)
+                //.waitSeconds(0.7)
+                //
+                .lineToLinearHeading(new Pose2d(46, -7, Math.toRadians(0)))
+//                .splineToConstantHeading(new Vector2d(36.1, -4.5), Math.toRadians(-45))
+                .splineTo(new Vector2d(33, -5), Math.toRadians(160)) //cplm e cu headingul
+                .waitSeconds(0.07)
+                .addDisplacementMarker(this::deschide)
+                .build();
+
+
         ElapsedTime overall_timer = new ElapsedTime();
 
+        ThreadInfo.shouldClose = false;
+        ThreadInfo.target = 0;
         liftController.start();
+
         telemetry.addData("baterie: ", String.valueOf(batteryVoltageSensor.getVoltage()));
-        telemetry.update();
 
         while (opModeInInit()) {
 
@@ -360,13 +405,17 @@ public class TEST extends LinearOpMode {
             telemetry.addLine(String.valueOf(timer.seconds()));
 
             robot.followTrajectorySequence(stack_3);
-//            coboara_si_rot_stack_3.interrupt();
+            coboara_si_rot_stack_3.interrupt();
 
             robot.followTrajectorySequence(back_junction_3);
-//            ridica_si_rot.interrupt();
+            ridica_si_rot.interrupt();
+
+            robot.followTrajectorySequence(stack_4);
+
+            robot.followTrajectorySequence(back_junction_4);
             this.deschide();
 
-
+            robot.update();
             telemetry.addData("id 2: ", tagOfInterest.id);
             telemetry.update();
 
@@ -416,6 +465,17 @@ public class TEST extends LinearOpMode {
         right.setPosition(poz_deschis_dr);
     }
 
+    private void back_thing(double power) {
+        time.reset();
+        while (opModeIsActive() && !getMagnetAtingere()) {
+            rotesteThing(power);
+            if (time.seconds() >= TIMER_SENZOR_DR)
+                break;
+        }
+        rotesteThing(0);
+    }
+
+
     private void back_thing() {
         time.reset();
         while (opModeIsActive() && !getMagnetAtingere()) {
@@ -436,17 +496,17 @@ public class TEST extends LinearOpMode {
 
 
     private void stanga() {
-        fs = robot.trajectoryBuilder(back_junction_3.end())
+        fs = robot.trajectoryBuilder(robot.getPoseEstimate())
                 .addTemporalMarker(0, () -> {
                     this.inchide();
                     coboara_si_rot_stack_3.start();
                 })
-                .lineToLinearHeading(new Pose2d(20, -14, Math.toRadians(0)))
+                .lineToLinearHeading(new Pose2d(18, -8, Math.toRadians(0)))
                 .build();
     }
 
     private void mijloc() {
-        fs = robot.trajectoryBuilder(back_junction_3.end())
+        fs = robot.trajectoryBuilder(robot.getPoseEstimate())
                 .addTemporalMarker(0, () -> {
                     this.inchide();
                     coboara_si_rot_stack_3.start();
@@ -456,12 +516,12 @@ public class TEST extends LinearOpMode {
     }
 
     private void dreapta() {
-        fs = robot.trajectoryBuilder(back_junction_3.end())
+        fs = robot.trajectoryBuilder(robot.getPoseEstimate())
                 .addTemporalMarker(0, () -> {
                     this.inchide();
                     coboara_si_rot_stack_3.start();
                 })
-                .lineToLinearHeading(new Pose2d(65.5, -6.65, Math.toRadians(0)),
+                .lineToLinearHeading(new Pose2d(61, -6.65, Math.toRadians(0)),
                         SampleMecanumDrive.getVelocityConstraint(35, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(22))
                 .build();

@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.TeleOP;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.button.Button;
@@ -25,8 +26,10 @@ import org.firstinspires.ftc.teamcode.Subsystems.BratSubsystem;
 import org.firstinspires.ftc.teamcode.Subsystems.DriveSubsystem;
 import org.firstinspires.ftc.teamcode.Subsystems.LiftSubsystem;
 import org.firstinspires.ftc.teamcode.Subsystems.ThingSubsystem;
+import org.firstinspires.ftc.teamcode.ThreadInfo;
 
 @TeleOp
+@Config
 public class TeleOP extends CommandOpMode {
     private Motor lf;
     private Motor rf;
@@ -49,6 +52,9 @@ public class TeleOP extends CommandOpMode {
     private Servo left, right;
 
     private TouchSensor magnet;
+
+//    public static double FPOWER = 0.034;
+    public static double FPOWER = 0;
 
     private LiftSubsystem liftSubsystem;
     private LiftCommand liftCommand;
@@ -201,7 +207,7 @@ public class TeleOP extends CommandOpMode {
         }, liftSubsystem);
 
         liftOpresteCommand = new InstantCommand(() -> {
-            liftSubsystem.liftPower(0);
+            liftSubsystem.liftPower(FPOWER);
         }, liftSubsystem);
 
         liftRidicaSlowCommand = new InstantCommand(() -> {
@@ -209,6 +215,7 @@ public class TeleOP extends CommandOpMode {
         }, liftSubsystem);
 
         liftCoboaraSlowCommand = new InstantCommand(() -> {
+            ThreadInfo.use = false;
             liftSubsystem.liftPower(power_coboara_slow);
         });
 
@@ -237,11 +244,11 @@ public class TeleOP extends CommandOpMode {
         }, bratSubsystem);
 
         driveForwardDpadCommand = new InstantCommand(()->{
-           driveSubsystem.dpad_frontal(0.6, driver1.getButton(GamepadKeys.Button.LEFT_BUMPER), driver1.getButton(GamepadKeys.Button.RIGHT_BUMPER));
+           driveSubsystem.dpad_frontal(0.75, driver1.getButton(GamepadKeys.Button.LEFT_BUMPER), driver1.getButton(GamepadKeys.Button.RIGHT_BUMPER));
         }, driveSubsystem);
 
         driveBackDpadCommand = new InstantCommand(()->{
-            driveSubsystem.dpad_frontal(-0.6, driver1.getButton(GamepadKeys.Button.LEFT_BUMPER), driver1.getButton(GamepadKeys.Button.RIGHT_BUMPER));
+            driveSubsystem.dpad_frontal(-0.75, driver1.getButton(GamepadKeys.Button.LEFT_BUMPER), driver1.getButton(GamepadKeys.Button.RIGHT_BUMPER));
         }, driveSubsystem);
 
         driveStrafeLeftDpadCommand = new InstantCommand(()->{
@@ -278,8 +285,8 @@ public class TeleOP extends CommandOpMode {
         liftStopPadJos = new GamepadButton(driver2, GamepadKeys.Button.DPAD_DOWN).whenReleased(liftOpresteCommand);
 
         //butoane apuca arunca
-        apuca = new GamepadButton(driver2, GamepadKeys.Button.A).whenPressed(strangeCommand);
-        arunca = new GamepadButton(driver2, GamepadKeys.Button.B).whenPressed(deschideCommand);
+        apuca = new GamepadButton(driver2, GamepadKeys.Button.B).whenPressed(strangeCommand);
+        arunca = new GamepadButton(driver2, GamepadKeys.Button.A).whenPressed(deschideCommand);
 
         //DPAD rotire thing
         rotesteStanga = new GamepadButton(driver2, GamepadKeys.Button.DPAD_LEFT).whileHeld(bratRotesteSTCommand);
@@ -290,7 +297,7 @@ public class TeleOP extends CommandOpMode {
 //        rotesteAutoDreapta = new GamepadButton(driver2, GamepadKeys.Button.Y).whenPressed(rotesteCentruSTThread::start);
 //        rotesteAutoStanga = new GamepadButton(driver2, GamepadKeys.Button.X).whenPressed(rotesteCentruDRThread::start);
 
-//        #################################
+
 //        rotesteAutoStanga = new GamepadButton(driver2, GamepadKeys.Button.X).whenPressed(bratStangaAUTOCommand);
 //        rotesteAutoDreapta = new GamepadButton(driver2, GamepadKeys.Button.Y).whenPressed(bratDreaptaAUTOCommand);
 

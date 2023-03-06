@@ -10,16 +10,6 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@Config
-class ThreadInfo {
-    public static int target = 0;
-    public static boolean shouldClose = false;
-    public static boolean use = true;
-    public static int fr;
-    public static boolean useTele = true;
-    public static double servo_speed = 0;
-    public static boolean closed_hand = false;
-}
 
 //MAI ESTE O ZI PANA LA REGIONALA SI CODUL CU IMPLEMENTAREA
 //NOASTRA DE PIDF SI THREADS PT LIFT NU FUNCTIONEAZA MULTUMIM
