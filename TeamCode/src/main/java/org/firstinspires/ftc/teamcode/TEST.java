@@ -82,7 +82,6 @@ public class TEST extends LinearOpMode {
     final int THRESHOLD_NUM_FRAMES_NO_DETECTION_BEFORE_LOW_DECIMATION = 4;
     int numFramesWithoutDetection = 0;
 
-
     // UNITS ARE METERS
     double tagsize = 0.166;
 
@@ -138,6 +137,7 @@ public class TEST extends LinearOpMode {
         brat_pe_sub.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         brat_pe_sub.setTargetPositionTolerance(1);
+
         time = new ElapsedTime();
 
         time.startTime();
@@ -168,14 +168,15 @@ public class TEST extends LinearOpMode {
         ridica_si_rot = new Thread(() -> {
 //            inchide();
             sleep(20);
-            ThreadInfo.target = 2000;
+            ThreadInfo.target = 2003;
             ThreadInfo.servo_speed = 1;
         });
+        ThreadInfo.servo_speed = 0;
 
         coboara_stack = new Thread(() -> {
             this.deschide();
             ThreadInfo.servo_speed = 0;
-            ThreadInfo.target = 290;
+            ThreadInfo.target = 289;
             this.servo.setPower(0.1);
             sleep(70);
             this.servo.setPower(0);
@@ -186,7 +187,7 @@ public class TEST extends LinearOpMode {
             ThreadInfo.servo_speed = 0;
             sleep(120);
             back_thing(-0.75);
-            ThreadInfo.target = 215;
+            ThreadInfo.target = 213;
 
         });
 
@@ -196,7 +197,7 @@ public class TEST extends LinearOpMode {
             sleep(120);
             back_thing(-0.75);
             sleep(50);
-            ThreadInfo.target = 105;
+            ThreadInfo.target = 103;
         });
 
         coboara_si_rot_stack_4 = new Thread(() -> {
@@ -253,7 +254,7 @@ public class TEST extends LinearOpMode {
                 .addTemporalMarker(0, this::deschide)
 //                0.12
                 .addTemporalMarker(0, coboara_si_rot_stack_2::start)
-                .lineToLinearHeading(new Pose2d(65.5, -7.1, Math.toRadians(0)),
+                .lineToLinearHeading(new Pose2d(65.4, -7.1, Math.toRadians(0)),
                         SampleMecanumDrive.getVelocityConstraint(40, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(28))
 //                .waitSeconds(0.1)
@@ -268,7 +269,7 @@ public class TEST extends LinearOpMode {
 
                 .addDisplacementMarker(ridica_si_rot::start)
                 //.waitSeconds(0.7)
-                //
+                //+
                 .lineToLinearHeading(new Pose2d(47, -7, Math.toRadians(0)))
 //                .splineToConstantHeading(new Vector2d(36.1, -4.5), Math.toRadians(-45))
                 .splineTo(new Vector2d(32.8, -5.07), Math.toRadians(160)) //cplm e cu headingul
@@ -281,7 +282,7 @@ public class TEST extends LinearOpMode {
         stack_3 = robot.trajectorySequenceBuilder(back_junction_after_math.end())
                 .addDisplacementMarker(this::deschide)
                 .addTemporalMarker(0, coboara_si_rot_stack_3::start)
-                .lineToLinearHeading(new Pose2d(65.7, -7.3, Math.toRadians(0)),
+                .lineToLinearHeading(new Pose2d(65.8, -7.3, Math.toRadians(0)),
                         SampleMecanumDrive.getVelocityConstraint(35, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(22))
                 .addDisplacementMarker(this::inchide)
@@ -303,7 +304,7 @@ public class TEST extends LinearOpMode {
         stack_4 = robot.trajectorySequenceBuilder(back_junction_3.end())
                 .addDisplacementMarker(this::deschide)
                 .addTemporalMarker(0, coboara_si_rot_stack_4::start)
-                .lineToLinearHeading(new Pose2d(65.5, -7.7, Math.toRadians(0)),
+                .lineToLinearHeading(new Pose2d(65.4, -7.7, Math.toRadians(0)),
                         SampleMecanumDrive.getVelocityConstraint(35, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(22))
                 .addDisplacementMarker(this::inchide)
@@ -324,8 +325,10 @@ public class TEST extends LinearOpMode {
 
         ElapsedTime overall_timer = new ElapsedTime();
 
-        ThreadInfo.shouldClose = false;
+        ThreadInfoStanga.shouldClose = false;
         ThreadInfo.target = 0;
+        ThreadInfo.servo_speed = 0;
+        
         liftController.start();
 
         telemetry.addData("baterie: ", String.valueOf(batteryVoltageSensor.getVoltage()));
