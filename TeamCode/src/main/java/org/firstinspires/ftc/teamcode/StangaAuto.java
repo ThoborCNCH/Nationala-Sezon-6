@@ -177,7 +177,7 @@ public class StangaAuto extends LinearOpMode {
         coboara_stack = new Thread(() -> {
             this.deschide();
             ThreadInfoStanga.servo_speed = 0;
-            ThreadInfoStanga.target = 170;
+            ThreadInfoStanga.target = 180;
             this.servo.setPower(-0.1);
             sleep(70);
             this.servo.setPower(0);
@@ -196,7 +196,7 @@ public class StangaAuto extends LinearOpMode {
             ThreadInfoStanga.servo_speed = 0;
             sleep(60);
             back_thing(1);
-            ThreadInfoStanga.target = 50;
+            ThreadInfoStanga.target = 60;
         });
 
         coboara_si_rot_stack_4 = new Thread(() -> {
@@ -218,15 +218,15 @@ public class StangaAuto extends LinearOpMode {
                     ThreadInfoStanga.target = 2003;
                 })
                 .lineTo(new Vector2d(-42, -30))
-                .splineTo(new Vector2d(-34, -5), Math.toRadians(60))
+                .splineTo(new Vector2d(-34.7, -5), Math.toRadians(60))
                 .build();
 
         stack_1 = robot.trajectorySequenceBuilder(first.end())
                 .addDisplacementMarker(this::deschide)
                 .addTemporalMarker(1, coboara_stack::start)
-                .lineToLinearHeading(new Pose2d(-39, -17, Math.toRadians(90)))
+                .lineToLinearHeading(new Pose2d(-38.8, -17, Math.toRadians(90)))
 //                .splineTo(new Vector2d(-65.7, -6.6), Math.toRadians(180),
-                .splineTo(new Vector2d(-66, -6.6), Math.toRadians(180),
+                .splineTo(new Vector2d(-66.3, -6.6), Math.toRadians(180),
                         SampleMecanumDrive.getVelocityConstraint(40, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(25))
                 .addDisplacementMarker(this::inchide)
@@ -239,7 +239,7 @@ public class StangaAuto extends LinearOpMode {
                 .waitSeconds(0.6)
                 .lineToLinearHeading(new Pose2d(-50, -7.2, Math.toRadians(180)))
 //                .splineToConstantHeading(new Vector2d(36.1, -4.5), Math.toRadians(-45))
-                .splineTo(new Vector2d(-34.5, -6), Math.toRadians(20)) //cplm e cu headingul
+                .splineTo(new Vector2d(-34.9, -7.5), Math.toRadians(20)) //cplm e cu headingul
 //end new
                 .waitSeconds(0.7)
                 .addDisplacementMarker(this::deschide)
@@ -248,7 +248,7 @@ public class StangaAuto extends LinearOpMode {
         stack_2 = robot.trajectorySequenceBuilder(back_junction.end())
                 .addTemporalMarker(0, this::deschide)
                 .addTemporalMarker(0.12, coboara_si_rot_stack_2::start)
-                .lineToLinearHeading(new Pose2d(-65.5, -8.2, Math.toRadians(180)),
+                .lineToLinearHeading(new Pose2d(-66, -8.2, Math.toRadians(180)),
                         SampleMecanumDrive.getVelocityConstraint(35, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(20))
                 .build();
@@ -260,7 +260,7 @@ public class StangaAuto extends LinearOpMode {
 
                 .lineToLinearHeading(new Pose2d(-52, -7.2, Math.toRadians(180)))
 //                .splineToConstantHeading(new Vector2d(36.1, -4.5), Math.toRadians(-45))
-                .splineTo(new Vector2d(-36, -5), Math.toRadians(20)) //cplm e cu headingul
+                .splineTo(new Vector2d(-36.4, -7.5), Math.toRadians(20)) //cplm e cu headingul
                 .waitSeconds(0.7)
                 .addDisplacementMarker(() -> {
                     this.deschide();
@@ -271,7 +271,7 @@ public class StangaAuto extends LinearOpMode {
         stack_3 = robot.trajectorySequenceBuilder(back_junction_after_math.end())
                 .addDisplacementMarker(this::deschide)
                 .addTemporalMarker(0, coboara_si_rot_stack_3::start)
-                .lineToLinearHeading(new Pose2d(-65.5, -9.25, Math.toRadians(180)),
+                .lineToLinearHeading(new Pose2d(-65.8, -9.25, Math.toRadians(180)),
                         SampleMecanumDrive.getVelocityConstraint(35, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(20))
                 .addDisplacementMarker(this::inchide)
@@ -283,9 +283,9 @@ public class StangaAuto extends LinearOpMode {
                 .setReversed(true)
                 .waitSeconds(0.5)
 //                .splineToLinearHeading(new Pose2d(-35.8, -4.55, Math.toRadians(180)), Math.toRadians(40))
-                .lineToLinearHeading(new Pose2d(-46, -7.5, Math.toRadians(180)))
+                .lineToLinearHeading(new Pose2d(-46, -7.8, Math.toRadians(180)))
 //                .splineToConstantHeading(new Vector2d(36.1, -4.5), Math.toRadians(-45))
-                .splineTo(new Vector2d(-35, -7), Math.toRadians(20)) //cplm e cu headingul
+                .splineTo(new Vector2d(-36.4, -7.8), Math.toRadians(20)) //cplm e cu headingul
 
                 .waitSeconds(0.07)
                 .addDisplacementMarker(this::deschide)
@@ -405,6 +405,7 @@ public class StangaAuto extends LinearOpMode {
             ridica_si_rot.interrupt();
 
 //            robot.followTrajectorySequence(stack_4);
+
 //            robot.followTrajectorySequence(back_junction_4);
 
 
