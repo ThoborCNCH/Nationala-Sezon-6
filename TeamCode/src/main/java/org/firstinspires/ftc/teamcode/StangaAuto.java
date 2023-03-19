@@ -204,7 +204,7 @@ public class StangaAuto extends LinearOpMode {
             ThreadInfoStanga.servo_speed = 0;
             sleep(100);
             back_thing(1);
-            ThreadInfo.target = 20;
+            ThreadInfoStanga.target = 20;
         });
 
 
