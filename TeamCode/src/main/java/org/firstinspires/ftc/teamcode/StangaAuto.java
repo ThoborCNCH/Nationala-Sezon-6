@@ -201,7 +201,7 @@ public class StangaAuto extends LinearOpMode {
 
         coboara_si_rot_stack_4 = new Thread(() -> {
             this.deschide();
-            ThreadInfo.servo_speed = 0;
+            ThreadInfoStanga.servo_speed = 0;
             sleep(100);
             back_thing(1);
             ThreadInfo.target = 20;
@@ -304,7 +304,7 @@ public class StangaAuto extends LinearOpMode {
                 .addDisplacementMarker(ridica_si_rot::start)
                 //.waitSeconds(0.7)
                 //
-                .lineToLinearHeading(new Pose2d(-46, -7.1, Math.toRadians(180)))
+                .lineToLinearHeading(new Pose2d(-46, -7.8, Math.toRadians(180)))
 //                .splineToConstantHeading(new Vector2d(36.1, -4.5), Math.toRadians(20))
                  .splineTo(new Vector2d(-34.8, -4), Math.toRadians(20)) //cplm e cu headingul
                 .waitSeconds(0.07)
