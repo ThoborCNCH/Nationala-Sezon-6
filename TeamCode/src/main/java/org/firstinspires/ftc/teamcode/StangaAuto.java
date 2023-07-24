@@ -61,11 +61,14 @@ public class StangaAuto extends LinearOpMode {
     TrajectorySequence s;
     TrajectorySequence stack_1;
     TrajectorySequence stack_2;
+    TrajectorySequence stack_4;
     Trajectory fs, rot;
     TrajectorySequence stack_3;
     TrajectorySequence back_junction;
     TrajectorySequence back_junction_after_math;
     TrajectorySequence back_junction_3;
+    TrajectorySequence back_junction_4;
+
     Thread coboara_si_rot_stack_3, coboara_si_rot_stack, coboara_stack;
 
     AprilTagDetection tagOfInterest;
@@ -175,35 +178,36 @@ public class StangaAuto extends LinearOpMode {
         coboara_stack = new Thread(() -> {
             this.deschide();
             ThreadInfoStanga.servo_speed = 0;
-            ThreadInfoStanga.target = 290;
+            sleep(50);
+            ThreadInfoStanga.target = 300;
         });
 
         coboara_si_rot_stack_2 = new Thread(() -> {
             this.deschide();
             ThreadInfoStanga.servo_speed = 0;
-            sleep(120);
+            sleep(90);
             back_thing();
             sleep(50);
-            ThreadInfoStanga.target = 220;
+            ThreadInfoStanga.target = 235;
 
         });
 
         coboara_si_rot_stack_3 = new Thread(() -> {
             this.deschide();
-            ThreadInfoStanga.servo_speed = 0;
+            ThreadInfoStanga.servo_speed = -0.2;
             sleep(150);
             back_thing();
             sleep(50);
-            ThreadInfoStanga.target = 130;
+            ThreadInfoStanga.target = 135;
         });
 
-//        coboara_si_rot_stack_4 = new Thread(() -> {
-//            this.deschide();
-//            ThreadInfo.servo_speed = 0;
-//            sleep(150);
-//            back_thing();
-//            ThreadInfo.target = 40;
-//        });
+        coboara_si_rot_stack_4 = new Thread(() -> {
+            this.deschide();
+            ThreadInfo.servo_speed = 0;
+            sleep(150);
+            back_thing();
+            ThreadInfo.target = 40;
+        });
 
         robot.setPoseEstimate(START_ST_RED_BLUE);
 
@@ -214,16 +218,16 @@ public class StangaAuto extends LinearOpMode {
                     this.inchide();
                     ThreadInfoStanga.target = 2000;
                 })
-                .lineTo(new Vector2d(-40, -25))
-                .splineTo(new Vector2d(-32.3, -3.8), Math.toRadians(60))
+                .lineTo(new Vector2d(-40.5, -27))
+                .splineTo(new Vector2d(-33.7, -3), Math.toRadians(60))
                 .build();
 
         stack_1 = robot.trajectorySequenceBuilder(first.end())
                 .addDisplacementMarker(this::deschide)
                 .addTemporalMarker(1, coboara_stack::start)
-                .lineToLinearHeading(new Pose2d(-40, -17.5, Math.toRadians(90)))
+                .lineToLinearHeading(new Pose2d(-42, -17, Math.toRadians(90)))
 //                .splineTo(new Vector2d(-65.7, -6.6), Math.toRadians(180),
-                .splineTo(new Vector2d(-66.7, -5.95), Math.toRadians(180),
+                .splineTo(new Vector2d(-69.3, -4.95), Math.toRadians(180),
                         SampleMecanumDrive.getVelocityConstraint(40, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(25))
                 .addDisplacementMarker(this::inchide)
@@ -234,9 +238,9 @@ public class StangaAuto extends LinearOpMode {
                 .addDisplacementMarker(ridica_si_rot::start)
                 .waitSeconds(0.5)
 
-                .lineToLinearHeading(new Pose2d(-48, -5.95, Math.toRadians(180)))
+                .lineToLinearHeading(new Pose2d(-52.6, -5.95, Math.toRadians(180)))
 //                .splineToConstantHeading(new Vector2d(36.1, -4.5), Math.toRadians(-45))
-                .splineTo(new Vector2d(-33, -5.7), Math.toRadians(20)) //cplm e cu headingul
+                .splineTo(new Vector2d(-36.4, -5.7), Math.toRadians(20)) //cplm e cu headingul
 //end new
                 .waitSeconds(0.07)
                 .addDisplacementMarker(this::deschide)
@@ -245,7 +249,7 @@ public class StangaAuto extends LinearOpMode {
         stack_2 = robot.trajectorySequenceBuilder(back_junction.end())
                 .addTemporalMarker(0, this::deschide)
                 .addTemporalMarker(0.12, coboara_si_rot_stack_2::start)
-                .lineToLinearHeading(new Pose2d(-66.7, -8, Math.toRadians(180)),
+                .lineToLinearHeading(new Pose2d(-73.5, -3.5, Math.toRadians(180)),
                         SampleMecanumDrive.getVelocityConstraint(35, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(20))
                 .build();
@@ -255,23 +259,25 @@ public class StangaAuto extends LinearOpMode {
                 .addDisplacementMarker(ridica_si_rot::start)
                 .waitSeconds(0.5)
 
-                .lineToLinearHeading(new Pose2d(-47, -7, Math.toRadians(180)))
+                .lineToLinearHeading(new Pose2d(-48, -6, Math.toRadians(180)))
 //                .splineToConstantHeading(new Vector2d(36.1, -4.5), Math.toRadians(-45))
-                .splineTo(new Vector2d(-33.3, -5.07), Math.toRadians(20)) //cplm e cu headingul
+                .splineTo(new Vector2d(-35., -3.85), Math.toRadians(20)) //cplm e cu headingul
                 .waitSeconds(0.07)
                 .addDisplacementMarker(() -> {
                     this.deschide();
                 })
                 .build();
 
+
         stack_3 = robot.trajectorySequenceBuilder(back_junction_after_math.end())
                 .addDisplacementMarker(this::deschide)
                 .addTemporalMarker(0, coboara_si_rot_stack_3::start)
-                .lineToLinearHeading(new Pose2d(-66.7, -7.65, Math.toRadians(180)),
+                .lineToLinearHeading(new Pose2d(-73.8, -3.7, Math.toRadians(180)),
                         SampleMecanumDrive.getVelocityConstraint(35, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(20))
                 .addDisplacementMarker(this::inchide)
                 .build();
+
 
         back_junction_3 = robot.trajectorySequenceBuilder(stack_3.end())
                 .addDisplacementMarker(ridica_si_rot::start)
@@ -285,33 +291,35 @@ public class StangaAuto extends LinearOpMode {
                 .waitSeconds(0.07)
                 .addDisplacementMarker(this::deschide)
                 .build();
-
-//        TrajectorySequence stack_4 = robot.trajectorySequenceBuilder(back_junction_3.end())
-//                .addDisplacementMarker(this::deschide)
-//                .addTemporalMarker(0, coboara_si_rot_stack_4::start)
-//                .lineToLinearHeading(new Pose2d(-64.7, -6.65, Math.toRadians(180)),
-//                        SampleMecanumDrive.getVelocityConstraint(35, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-//                        SampleMecanumDrive.getAccelerationConstraint(22))
-//                .addDisplacementMarker(this::inchide)
-//                .build();
-
-//        TrajectorySequence back_junction_4 = robot.trajectorySequenceBuilder(stack_4.end())
-//                .addDisplacementMarker(this::inchide)
-//                .addDisplacementMarker(ridica_si_rot::start)
-//                //.waitSeconds(0.7)
-//                //
-//                .lineToLinearHeading(new Pose2d(-46, -7, Math.toRadians(180)))
-////                .splineToConstantHeading(new Vector2d(36.1, -4.5), Math.toRadians(-45))
-//                .splineTo(new Vector2d(-33, -5), Math.toRadians(40)) //cplm e cu headingul
-//                .waitSeconds(0.07)
-//                .addDisplacementMarker(this::deschide)
-//                .build();
-
-
+/*
+        stack_4 = robot.trajectorySequenceBuilder(back_junction_3.end())
+                .addDisplacementMarker(this::deschide)
+                .addTemporalMarker(0, coboara_si_rot_stack_4::start)
+                .lineToLinearHeading(new Pose2d(-65.5, -7.7, Math.toRadians(180)),
+                        SampleMecanumDrive.getVelocityConstraint(35, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getAccelerationConstraint(22))
+                .addDisplacementMarker(this::inchide)
+                .build();
+        back_junction_4 = robot.trajectorySequenceBuilder(stack_4.end())
+                .addDisplacementMarker(this::inchide)
+                .addDisplacementMarker(ridica_si_rot::start)
+                //.waitSeconds(0.7)
+                //
+                .lineToLinearHeading(new Pose2d(-46, -6.5, Math.toRadians(180)))
+//                .splineToConstantHeading(new Vector2d(36.1, -4.5), Math.toRadians(20))
+                // .splineTo(new Vec
+                //
+                // tor2d(33, -5), Math.toRadians(160)) //cplm e cu headingul
+                .waitSeconds(0.07)
+                .addDisplacementMarker(this::deschide)
+                .build();
+*/
         ElapsedTime overall_timer = new ElapsedTime();
 
         ThreadInfoStanga.shouldClose = false;
         ThreadInfo.target = 0;
+        ThreadInfo.servo_speed = 0;
+
         liftController.start();
 
         telemetry.addData("baterie: ", String.valueOf(batteryVoltageSensor.getVoltage()));
@@ -371,9 +379,11 @@ public class StangaAuto extends LinearOpMode {
             camera.closeCameraDevice();
 
             robot.followTrajectorySequence(first);
+
 //            ridica.join();
 //            telemetry.addData("ridica thred: ", ridica.getState());
             robot.followTrajectorySequence(stack_1);
+
 //            coboara_si_rot_stack_1.interrupt();
             coboara_stack.join();
 
@@ -391,13 +401,17 @@ public class StangaAuto extends LinearOpMode {
 //            ridica_si_rot.interrupt();
             telemetry.addLine(String.valueOf(timer.seconds()));
 
-//            robot.followTrajectorySequence(stack_3);
-//            coboara_si_rot_stack_3.interrupt();
+            robot.followTrajectorySequence(stack_3);
+            coboara_si_rot_stack_3.interrupt();
 
-//            robot.followTrajectorySequence(back_junction_3);
-//            ridica_si_rot.interrupt();
+            robot.followTrajectorySequence(back_junction_3);
+            ridica_si_rot.interrupt();
+/*
+            robot.followTrajectorySequence(stack_4);
+            robot.followTrajectorySequence(back_junction_4);
+*/
+
             this.deschide();
-
 
             telemetry.addData("id 2: ", tagOfInterest.id);
             telemetry.update();
@@ -502,7 +516,6 @@ public class StangaAuto extends LinearOpMode {
                 .build();
     }
 }
-
 
 /**
  * Roses are red
